@@ -1,10 +1,20 @@
 package guis;
 
+import db_objs.User;
+
 import javax.swing.*;
 
 /*Creating an abstract class helps us setup the blueprint that our GUIS will follows. */
 public abstract class BaseFrame extends JFrame{
+    protected User user;
     public BaseFrame(String title) {
+        initialize(title);
+    }
+
+    public BaseFrame(String title, User user){
+        // initialize user
+        this.user = user;
+
         initialize(title);
     }
 

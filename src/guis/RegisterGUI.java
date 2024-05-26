@@ -1,7 +1,13 @@
 package guis;
 
+import db_objs.MyJDBC;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RegisterGUI extends BaseFrame{
     public RegisterGUI(){
@@ -60,21 +66,89 @@ public class RegisterGUI extends BaseFrame{
         //create PasswordField for re-type password
         JPasswordField repasswordField = new JPasswordField();
         repasswordField.setBounds(20, 360, getWidth() - 50, 40);
-        repasswordField.setFont(new Font("Dialog", Font.PLAIN, 20));
+        repasswordField.setFont(new Font("Dialog", Font.PLAIN, 28));
         add(repasswordField);
 
         // create register button
-        JButton loginButton = new JButton("Register");
-        loginButton.setBounds(20, 460,getWidth() - 50, 40);
-        loginButton.setFont(new Font("Dialog", Font.BOLD, 20));
-        add(loginButton);
+        JButton registerButton = new JButton("Register");
+        registerButton.setBounds(20, 460,getWidth() - 50, 40);
+        registerButton.setFont(new Font("Dialog", Font.BOLD, 20));
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // get username
+                String username = usernameField.getText();
+
+                // get password
+                String password = String.valueOf(passwordField.getPassword());
+
+                // get rePassword
+                String rePassword = String.valueOf(repasswordField.getPassword());
+
+                // validate the user input
+                if(validateUserInput(username, password, rePassword)){
+                    // if register success dispose the gui and launch the login gui
+                    if(MyJDBC.register(username,password)){
+                        // dispose the register gui
+                        RegisterGUI.this.dispose();
+
+                        // launch the login gui
+                        LoginGUI loginGUI = new LoginGUI();
+                        loginGUI.setVisible(true);
+
+                        // create a result dialog
+                        JOptionPane.showMessageDialog(loginGUI, "Register Account Successful!");
+
+                    }else{
+                        JOptionPane.showMessageDialog(RegisterGUI.this, "ERROR: Username already taken");
+                    }
+                }else{
+                    // invalid user input
+                    JOptionPane.showMessageDialog(RegisterGUI.this,
+                            "Error: Username must be at least 6 characters\n" +
+                            "and/or Password must match");
+                }
+
+            }
+        });
+        add(registerButton);
 
         // create login label
         JLabel loginLabel = new JLabel("<html><a href=\"#\">Already have an account? Login Here</a></html");
         loginLabel.setBounds(0, 510, getWidth() - 10, 30);
         loginLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(loginButton);
+        loginLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // dispose the register GUI
+                RegisterGUI.this.dispose();
 
+                // launch the login gui
+                new LoginGUI().setVisible(true);
+            }
+        });
+
+        add(loginLabel);
+
+    }
+
+    // if the user input is valid, this method will return true otherwise false.
+    private boolean validateUserInput(String username, String password, String rePassword){
+        // all fields must have a value
+        if(username.length() == 0 || password.length() == 0 || rePassword.length() == 0)
+            return false;
+
+        // username must have 6 characters
+        if(username.length() < 6){
+            return false;
+        }
+
+        // password and repassword must be the same
+        if(!password.equals(rePassword)){
+            return false;
+        }
+
+        return true;
     }
 }
