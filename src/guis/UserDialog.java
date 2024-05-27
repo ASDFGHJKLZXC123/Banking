@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.*;
+import java.util.ArrayList;
 
 
 /*
@@ -21,6 +22,8 @@ public class UserDialog extends JDialog implements ActionListener {
     private JLabel balanceLabel, enterAmountLabel, enterUserLabel;
     private JTextField enterAmountField, enterUserField;
     private JButton actionButton;
+    private JPanel pastTransactionPanel;
+    private ArrayList<Transaction> pastTransactions;
 
 
     public UserDialog(UserGUI userGUI, User user) {
@@ -171,6 +174,48 @@ public class UserDialog extends JDialog implements ActionListener {
         }else{
             JOptionPane.showMessageDialog(this, "Transfer Failed!");
         }
+    }
+
+    public void addPastTransactionComponents(){
+        pastTransactionPanel = new JPanel();
+
+        pastTransactionPanel.setLayout(new BoxLayout(pastTransactionPanel, BoxLayout.Y_AXIS));
+
+        JScrollPane scrollPane = new JScrollPane(pastTransactionPanel);
+
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBounds(0, 20, getWidth() - 15, getHeight() - 80);
+
+        pastTransactions = MyJDBC.getPastTransaction(user);
+
+        for(int i=0; i < pastTransactions.size(); i++){
+            Transaction pastTransaction = pastTransactions.get(i);
+
+            JPanel pastTransactionContainer = new JPanel();
+            pastTransactionContainer.setLayout(new BorderLayout());
+
+            // Add transaction type label
+            JLabel transactionTypeLabel = new JLabel(pastTransaction.getTransactionType());
+            transactionTypeLabel.setFont(new Font("Dialog", Font.BOLD, 20));
+
+            // Add transaction amount label
+            JLabel transactionAmountLabel = new JLabel(String.valueOf(pastTransaction.getTransactionAmount()));
+            transactionAmountLabel.setFont(new Font("Dialog", Font.BOLD, 20));
+
+            // Add transaction date label
+            JLabel transactionDateLabel = new JLabel(String.valueOf(pastTransaction.getTransactionDate()));
+            transactionDateLabel.setFont(new Font("Dialog", Font.BOLD, 20));
+
+            pastTransactionContainer.add(transactionTypeLabel, BorderLayout.WEST);
+            pastTransactionContainer.add(transactionAmountLabel, BorderLayout. EAST);
+            pastTransactionContainer.add(transactionDateLabel, BorderLayout.SOUTH);
+
+            pastTransactionContainer.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            pastTransactionPanel.add(pastTransactionContainer);
+        }
+
+        add(scrollPane, BorderLayout.EAST);
     }
 
 

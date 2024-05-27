@@ -112,9 +112,12 @@ public class UserGUI extends BaseFrame implements ActionListener {
                 userDialog.addUserField();
             }
 
-            userDialog.setVisible(true);
 
+        }else if(buttonPressed.equalsIgnoreCase("Past Transaction")){
+            userDialog.addPastTransactionComponents();
         }
+
+        userDialog.setVisible(true);
 
 
     }

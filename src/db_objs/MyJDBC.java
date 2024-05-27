@@ -2,6 +2,7 @@ package db_objs;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 
 /*
     JDBC class is used to interact with our MySQL Database to perform activties such as retrieving and updating database.
@@ -189,6 +190,37 @@ public class MyJDBC {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static ArrayList<Transaction> getPastTransaction(User user){
+        ArrayList<Transaction> pastTransactions = new ArrayList<>();
+        try{
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+            PreparedStatement selectAllTransaction = connection.prepareStatement(
+                    "SELECT * FROM transactions WHERE user_id = ?"
+            );
+
+            selectAllTransaction.setInt(1, user.getID());
+
+            ResultSet resultSet = selectAllTransaction.executeQuery();
+
+            while(resultSet.next()){
+                Transaction transaction = new Transaction(
+                        user.getID(),
+                        resultSet.getString("transaction_type"),
+                        resultSet.getBigDecimal("transaction_amount"),
+                        resultSet.getDate("transaction_date")
+                );
+
+                pastTransactions.add(transaction);
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return pastTransactions;
     }
 
 }
