@@ -57,7 +57,7 @@ public class LoginGUI extends BaseFrame{
         add(passwordLabel);
 
         //create JTextField for password input
-        JTextField passwordField = new JTextField();
+        JPasswordField passwordField = new JPasswordField();
         passwordField.setBounds(20, 320, getWidth() - 50, 40);
         passwordField.setFont(new Font("Dialog", Font.PLAIN, 28));
         add(passwordField);
@@ -73,7 +73,7 @@ public class LoginGUI extends BaseFrame{
                 String username = usernameField.getText();
 
                 // get password
-                String password = String.valueOf(passwordField.getText());
+                String password = String.valueOf(passwordField.getPassword());
 
                 // validate login
                 User user = MyJDBC.validateLogin(username, password);

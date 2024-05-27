@@ -12,10 +12,6 @@ public class AppLauncher {
             @Override
             public void run() {
                 new LoginGUI().setVisible(true);
-                //new RegisterGUI().setVisible(true);
-//                new UserGUI(
-//                        new User(1, "username", "password", new BigDecimal("20.00"))
-//                ).setVisible(true);
             }
         });
     }

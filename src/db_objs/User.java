@@ -18,8 +18,8 @@ public class User {
         this.currentBalance = currentBalance;
     }
 
-    public int getId(){
-        return id;
+    public int getID(){
+         return id;
     }
 
     public String getUsername(){

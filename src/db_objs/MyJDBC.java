@@ -1,5 +1,6 @@
 package db_objs;
 
+import java.math.BigDecimal;
 import java.sql.*;
 
 /*
@@ -30,7 +31,9 @@ public class MyJDBC {
             // true - query returned data and result set now points to the first row
             // false - query returned no data and result set equals
             if(resultSet.next()){
-
+                return new User(
+                        resultSet.getInt("id"), username, password,
+                        resultSet.getBigDecimal("current_balance"));
             }
 
         }catch(SQLException e){
@@ -51,13 +54,13 @@ public class MyJDBC {
                 Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
 
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        "INSERT INTO users(username, password) " +
-                                "VALUES(?, ?)"
+                        "INSERT INTO users(username, password, current_balance) " +
+                                "VALUES(?, ?, ?)"
                 );
 
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, password);
-
+                preparedStatement.setBigDecimal(3, new BigDecimal(0));
                 preparedStatement.executeUpdate();
                 return true;
             }
@@ -86,8 +89,49 @@ public class MyJDBC {
         }catch(SQLException e){
             e.printStackTrace();
         }
-
         return true;
+    }
+
+    public static boolean addTransactionToDatabase(Transaction transaction){
+        try{
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+            PreparedStatement insertTransaction = connection.prepareStatement(
+                    "INSERT transactions(user_id, transaction_type, transaction_amount, transaction_date) " +
+                            "VALUES(?, ?, ?, NOW())"
+            );
+
+            insertTransaction.setInt(1, transaction.getUserID());
+            insertTransaction.setString(2, transaction.getTransactionType());
+            insertTransaction.setBigDecimal(3, transaction.getTransactionAmount());
+
+            insertTransaction.executeUpdate();
+
+            return true;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static boolean updateCurrentBalance(User user){
+        try{
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+            PreparedStatement updateBalance = connection.prepareStatement(
+                    "UPDATE users SET current_balance = ? WHERE id = ?"
+            );
+
+            updateBalance.setBigDecimal(1, user.getCurrentBalance());
+            updateBalance.setInt(2, user.getID());
+
+            updateBalance.executeUpdate();
+            return true;
+
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
 }
