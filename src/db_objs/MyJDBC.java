@@ -9,9 +9,11 @@ import java.util.ArrayList;
  */
 public class MyJDBC {
     // database configurations
-    private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/bankapp";
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "TTTasshole2333";
+    private static final String DB_URL = "";
+    //username for the SQL configuration
+    private static final String DB_USERNAME = "";
+    //password for the SQL configuration
+    private static final String DB_PASSWORD = "";
 
     public static User validateLogin(String username, String password){
         try{
