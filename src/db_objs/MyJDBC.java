@@ -134,4 +134,61 @@ public class MyJDBC {
         }
     }
 
+    // true - transfer success
+    // false - transfer fail
+    public static boolean transfer(User user, String transferredUsername, float transferAmount){
+        try{
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+            PreparedStatement queryUser = connection.prepareStatement(
+                    "SELECT * FROM users WHERE username = ?"
+            );
+
+            queryUser.setString(1, transferredUsername);
+            ResultSet resultSet = queryUser.executeQuery();
+
+            while (resultSet.next()){
+                User transferredUser = new User(
+                        resultSet.getInt("id"),
+                        transferredUsername,
+                        resultSet.getString("password"),
+                        resultSet.getBigDecimal("current_balance")
+                );
+
+                // Transaction for transfer user
+                Transaction transferTransaction = new Transaction(
+                        user.getID(),
+                        "Transfer",
+                        new BigDecimal(-transferAmount),
+                        null
+                );
+
+                // Transaction for receive user
+                Transaction receivedTransaction = new Transaction(
+                        transferredUser.getID(),
+                        "Transfer",
+                        new BigDecimal(transferAmount),
+                        null
+                );
+
+                // update transfer user
+                transferredUser.setCurrentBalance(transferredUser.getCurrentBalance().add(BigDecimal.valueOf(transferAmount)));
+                updateCurrentBalance(transferredUser);
+
+                // update user current balance
+                user.setCurrentBalance(user.getCurrentBalance().subtract(BigDecimal.valueOf(transferAmount)));
+                updateCurrentBalance(user);
+
+                addTransactionToDatabase(transferTransaction);
+                addTransactionToDatabase(receivedTransaction);
+
+                return true;
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

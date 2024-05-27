@@ -129,6 +129,7 @@ public class UserDialog extends JDialog implements ActionListener {
         userGUI.getCurrentBalanceField().setText("$" + user.getCurrentBalance());
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String buttonPressed = e.getActionCommand();
@@ -140,6 +141,37 @@ public class UserDialog extends JDialog implements ActionListener {
         if(buttonPressed.equalsIgnoreCase("Deposit")){
             // we want to handle the deposit transaction
             handleTransaction(buttonPressed, amountVal);
+        }else{
+            int result = user.getCurrentBalance().compareTo(BigDecimal.valueOf(amountVal));
+
+            // result < 0 means current balance less than amountVal
+            // result = 0 means current balance equals amountVal
+            // result > 0 means current balance more than amountVal
+            if(result < 0){
+                JOptionPane.showMessageDialog(this, "Error: Input value is more than current balance");
+                return;
+            }
+
+            if(buttonPressed.equalsIgnoreCase("Withdraw")) {
+                handleTransaction(buttonPressed, amountVal);
+            }else{
+                // transfer
+                String transferredUser = enterUserField.getText();
+
+                // handle transfer
+                handleTransfer(user, transferredUser, amountVal);
+            }
         }
     }
+
+    private void handleTransfer(User user, String transferUser, float amount){
+        if(MyJDBC.transfer(user, transferUser, amount)){
+            JOptionPane.showMessageDialog(this, "Transfer Success!");
+            resetFieldAndUpdateCurrentBalance();
+        }else{
+            JOptionPane.showMessageDialog(this, "Transfer Failed!");
+        }
+    }
+
+
 }
