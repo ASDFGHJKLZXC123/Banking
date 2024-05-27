@@ -7,3 +7,4 @@ Simple Bank App with Swing and MySQL
 6. Log out
 7. View past transaction
 8. Transfer balance to another user
+This program requires a running serve!
